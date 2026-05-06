@@ -81,6 +81,8 @@ Push project ke GitHub, lalu deploy di Streamlit Cloud dengan main file:
 app.py
 ```
 
+Pada `Advanced settings` Streamlit Cloud, pilih Python `3.12`. Jangan gunakan Python `3.13` untuk deployment ini karena beberapa dependency video/ML belum stabil di semua wheel Python 3.13.
+
 Fitur aplikasi:
 
 - Mode `Browser camera - GitHub/Streamlit Cloud` berbasis WebRTC.
