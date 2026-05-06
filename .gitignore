@@ -1,0 +1,12 @@
+__pycache__/
+_pycache_/
+*.pyc
+.ipynb_checkpoints/
+
+generated_dataset/
+runs/
+
+/yolo*.pt
+/yolov*.pt
+
+.streamlit/secrets.toml

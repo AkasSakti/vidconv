@@ -1,0 +1,10 @@
+path: /content/drive/My Drive/Colab Notebooks/vidconv/generated_dataset
+train: images/train
+val: images/val
+names:
+  0: Good_Day
+  1: Kapal_Api
+  2: Kopi_Gadjah
+  3: Luwak_White_Coffe
+  4: Nutrisari
+  5: Torabika
