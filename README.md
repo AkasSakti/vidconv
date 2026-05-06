@@ -81,7 +81,7 @@ Push project ke GitHub, lalu deploy di Streamlit Cloud dengan main file:
 app.py
 ```
 
-Pada `Advanced settings` Streamlit Cloud, pilih Python `3.12`. Jangan gunakan Python `3.13` untuk deployment ini karena beberapa dependency video/ML belum stabil di semua wheel Python 3.13.
+Deployment menyertakan `runtime.txt` berisi `python-3.12`. Jika Streamlit Cloud tetap menampilkan pilihan Python manual, pilih Python `3.12`.
 
 Fitur aplikasi:
 
