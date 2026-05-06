@@ -6,6 +6,7 @@ from pathlib import Path
 from threading import Lock
 
 import cv2
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -162,7 +163,7 @@ class BrowserCameraProcessor(VideoProcessorBase):
 
 def run_browser_camera(detector: ProductDetector, settings: dict) -> None:
     if webrtc_streamer is None or av is None:
-        st.error("Dependency streamlit-webrtc belum terpasang. Jalankan: pip install -r requirements.txt")
+        run_browser_snapshot(detector, settings)
         return
 
     st.info("Mode ini untuk Streamlit via GitHub/Streamlit Cloud. Kamera dibuka dari browser pengguna.")
@@ -185,6 +186,62 @@ def run_browser_camera(detector: ProductDetector, settings: dict) -> None:
         if state["unknown_logs"]:
             st.subheader("Log unknown")
             st.dataframe(pd.DataFrame(state["unknown_logs"]), use_container_width=True, hide_index=True)
+
+
+def run_browser_snapshot(detector: ProductDetector, settings: dict) -> None:
+    st.warning(
+        "WebRTC tidak tersedia di environment ini. Mode fallback memakai kamera browser bawaan Streamlit "
+        "untuk deteksi per snapshot."
+    )
+    image_file = st.camera_input("Ambil gambar dari kamera browser")
+    if image_file is None:
+        render_state_metrics({name: 0 for name in CLASS_NAMES}, 0)
+        return
+
+    file_bytes = np.frombuffer(image_file.getvalue(), np.uint8)
+    frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+    if frame is None:
+        st.error("Gambar kamera tidak dapat dibaca.")
+        return
+
+    line_y = int(frame.shape[0] * settings["line_position"] / 100)
+    detections, unknowns = detector.detect(
+        frame,
+        confidence_threshold=settings["confidence"],
+        min_area=settings["min_area"],
+    )
+    tracks = [
+        type("SnapshotTrack", (), {"centroid": item["centroid"], "track_id": idx + 1})()
+        for idx, item in enumerate(detections)
+    ]
+    output = draw_overlay(frame, detections, tracks, line_y)
+    output = cv2.cvtColor(output, cv2.COLOR_BGR2RGB)
+    st.image(output, channels="RGB", use_container_width=True)
+
+    counts = {name: 0 for name in CLASS_NAMES}
+    unknown_count = 0
+    logs: list[dict] = []
+    for item in detections:
+        if item["class_name"] == "unknown":
+            unknown_count += 1
+        elif item["class_name"] in counts:
+            counts[item["class_name"]] += 1
+    for unknown in unknowns:
+        logs.append(
+            {
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "confidence": round(unknown["confidence"], 3),
+                "reason": unknown["reason"],
+                "area": unknown["area"],
+                "aspect_ratio": round(unknown["aspect_ratio"], 3),
+            }
+        )
+
+    render_state_metrics(counts, unknown_count)
+    st.line_chart(pd.DataFrame([{**counts, "unknown": unknown_count}]))
+    if logs:
+        st.subheader("Log unknown")
+        st.dataframe(pd.DataFrame(logs), use_container_width=True, hide_index=True)
 
 
 def main() -> None:
