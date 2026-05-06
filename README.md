@@ -86,6 +86,7 @@ Jika Streamlit Cloud menampilkan pilihan Python manual, pilih Python `3.12`. Unt
 Fitur aplikasi:
 
 - Mode `Browser camera - GitHub/Streamlit Cloud` berbasis WebRTC.
+- Jika WebRTC tidak tersedia, app otomatis fallback ke kamera snapshot `st.camera_input`.
 - Mode `OpenCV camera - local runtime` untuk testing lokal.
 - Bounding box dan label class.
 - Centroid tracking sederhana.
