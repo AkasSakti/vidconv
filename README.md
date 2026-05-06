@@ -81,7 +81,7 @@ Push project ke GitHub, lalu deploy di Streamlit Cloud dengan main file:
 app.py
 ```
 
-Deployment menyertakan `runtime.txt` berisi `python-3.12`. Jika Streamlit Cloud tetap menampilkan pilihan Python manual, pilih Python `3.12`.
+Jika Streamlit Cloud menampilkan pilihan Python manual, pilih Python `3.12`. Untuk mengubah versi Python pada app yang sudah pernah dibuat, hapus app dari dashboard lalu deploy ulang dengan pilihan Python yang benar.
 
 Fitur aplikasi:
 
